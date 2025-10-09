@@ -1,0 +1,162 @@
+{% extends "base.html" %}
+
+{% block title %}{{ lecturer.name }} - SIREDO-TUS{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-lg-4 text-center mb-4 mb-lg-0 border-end text-center">
+                    <img src="/static/assets/img/person.png" alt="avatar" class="rounded-circle img-fluid mb-3" style="width: 150px;">
+                    <h5 class="my-3">{{ lecturer.name }}</h5>
+                    <p class="text-muted mb-1">Lecturer</p>
+                    <p class="text-muted mb-2">{{ lecturer.name_dept or 'Department Not Set' }}</p>
+                    <p class="text-muted mb-1">Telkom University Surabaya</p>
+                </div>
+                <div class="col-lg-8">
+                    <div class="row mb-2">
+                        <div class="col-sm-4"><strong>Full Name</strong></div>
+                        <div class="col-sm-8 text-muted">{{ lecturer.name }}</div>
+                    </div>
+                    <hr>
+                    <div class="row mb-2">
+                        <div class="col-sm-4"><strong>Code</strong></div>
+                        <div class="col-sm-8 text-muted">{{ lecturer.code_lec or 'Not Available' }}</div>
+                    </div>
+                    <hr>
+                    <div class="row mb-2">
+                        <div class="col-sm-4"><strong>NIP</strong></div>
+                        <div class="col-sm-8 text-muted">{{ lecturer.nip or 'Not Available' }}</div>
+                    </div>
+                    <hr>
+                    <div class="row mb-2">
+                        <div class="col-sm-4"><strong>NIDN</strong></div>
+                        <div class="col-sm-8 text-muted">{{ lecturer.nidn or 'Not Available' }}</div>
+                    </div>
+                    <hr>
+                    <div class="row mb-2">
+                        <div class="col-sm-4"><strong>Email</strong></div>
+                        <div class="col-sm-8 text-muted">
+                            {% if lecturer.email %}
+                                <a href="mailto:{{ lecturer.email }}">{{ lecturer.email }}</a>
+                            {% else %}
+                                Not Available
+                            {% endif %}
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row mb-2">
+                        <div class="col-sm-4"><strong>Department</strong></div>
+                        <div class="col-sm-8 text-muted">{{ lecturer.name_dept or 'Not Available' }}</div>
+                    </div>
+                    <hr>
+                    <div class="row mb-2">
+                        <div class="col-sm-4"><strong>Expertise</strong></div>
+                        <div class="col-sm-8 text-muted">{{ lecturer.expertise or 'Not Available' }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card mb-4">
+        <div class="card-header"><h4>Topic Modelling</h4></div>
+        <div class="card-body">
+            <div class="d-flex justify-content-center mb-3">
+                <button class="btn btn-primary mx-2" id="btnId" onclick="showLda('id')">Topic Modelling (ID)</button>
+                <button class="btn btn-secondary mx-2" id="btnEn" onclick="showLda('en')">Topic Modelling (EN)</button>
+            </div>
+            <div id="ldaVizId" class="lda-viz">
+                {% if lda_id_path %}
+                    <iframe src="{{ url_for('static', filename=lda_id_path) }}" width="100%" height="800px" frameborder="0"></iframe>
+                {% else %}
+                    <p class="text-center text-muted">Not Found</p>
+                {% endif %}
+            </div>
+            <div id="ldaVizEn" class="lda-viz" style="display:none;">
+                {% if lda_en_path %}
+                    <iframe src="{{ url_for('static', filename=lda_en_path) }}" width="100%" height="800px" frameborder="0"></iframe>
+                {% else %}
+                    <p class="text-center text-muted">Not Found</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="card mb-4">
+        <div class="card-header"><h4>Publications</h4></div>
+        <div class="card-body">
+            {% if publications %}
+                <ul class="list-group list-group-flush" id="publication-list">
+                    {% for publication in publications %}
+                        <li class="list-group-item">
+                            <a href="{{ publication.linkURL }}" target="_blank">{{ publication.title }}</a>
+                        </li>
+                    {% endfor %}
+                </ul>
+                {% if publications|length > 10 %}
+                    <div class="text-center mt-3">
+                        <button class="btn btn-primary" id="toggle-publications">See More</button>
+                    </div>
+                {% endif %}
+            {% else %}
+                <p class="text-center text-muted">No publications found.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+    function showLda(lang) {
+        document.getElementById('ldaVizId').style.display = 'none';
+        document.getElementById('ldaVizEn').style.display = 'none';
+
+        document.getElementById('btnId').classList.remove('btn-primary');
+        document.getElementById('btnId').classList.add('btn-secondary');
+        document.getElementById('btnEn').classList.remove('btn-primary');
+        document.getElementById('btnEn').classList.add('btn-secondary');
+
+        if (lang === 'id') {
+            document.getElementById('ldaVizId').style.display = 'block';
+            document.getElementById('btnId').classList.remove('btn-secondary');
+            document.getElementById('btnId').classList.add('btn-primary');
+        } else {
+            document.getElementById('ldaVizEn').style.display = 'block';
+            document.getElementById('btnEn').classList.remove('btn-secondary');
+            document.getElementById('btnEn').classList.add('btn-primary');
+        }
+    }
+
+    // Show Indonesian by default on page load
+    document.addEventListener('DOMContentLoaded', () => {
+        showLda('id');
+
+        const publicationList = document.getElementById('publication-list');
+        const toggleButton = document.getElementById('toggle-publications');
+        const publicationItems = publicationList ? Array.from(publicationList.children) : [];
+
+        if (publicationItems.length > 10) {
+            for (let i = 10; i < publicationItems.length; i++) {
+                publicationItems[i].style.display = 'none';
+            }
+            toggleButton.textContent = 'See More (' + (publicationItems.length - 10) + ')';
+
+            toggleButton.addEventListener('click', () => {
+                if (toggleButton.textContent.includes('See More')) {
+                    for (let i = 10; i < publicationItems.length; i++) {
+                        publicationItems[i].style.display = '';
+                    }
+                    toggleButton.textContent = 'See Less';
+                } else {
+                    for (let i = 10; i < publicationItems.length; i++) {
+                        publicationItems[i].style.display = 'none';
+                    }
+                    toggleButton.textContent = 'See More (' + (publicationItems.length - 10) + ')';
+                }
+            });
+        } else if (toggleButton) {
+            toggleButton.style.display = 'none'; // Hide button if not needed
+        }
+
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,6 @@
+PS C:\laragon\www\ProjectTA> cd Deployment
+PS C:\laragon\www\ProjectTA\Deployment> flaskenv\Scripts\activate  
+(flaskenv) PS C:\laragon\www\ProjectTA\Deployment> cd quickstart
+(flaskenv) PS C:\laragon\www\ProjectTA\Deployment\quickstart> set FLASK_APP=app.py       
+(flaskenv) PS C:\laragon\www\ProjectTA\Deployment\quickstart> set FLASK_ENV=development  
+(flaskenv) PS C:\laragon\www\ProjectTA\Deployment\quickstart> flask --app app run --debug

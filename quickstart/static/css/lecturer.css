@@ -1,0 +1,47 @@
+/* Lecturer-specific styles */
+.lecturer-card .card {
+    transition: transform 0.2s ease-in-out;
+}
+
+.lecturer-card .card:hover {
+    transform: translateY(-5px);
+}
+
+.lecturer-card-inner { height: 100%; }
+
+.lecturer-card .card-body { padding: 1.5rem; }
+
+.lecturer-avatar {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+}
+
+.left-col { min-width: 120px; }
+
+.view-profile-btn {
+    width: 110px;
+}
+
+.lecturer-name { font-size: 1rem; line-height: 1.3; }
+
+.lecturer-dept { font-size: 0.9rem; }
+
+.lecturer-info { flex-grow: 1; }
+
+.lecturer-expertise { line-height: 1.3; }
+
+/* Force 3 columns on larger screens */
+@media (min-width: 768px) {
+    .lecturer-card {
+        width: 33.333333% !important;
+        float: left;
+    }
+}
+
+@media (min-width: 992px) {
+    .lecturer-card {
+        width: 33.333333% !important;
+        float: left;
+    }
+} 

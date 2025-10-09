@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}Evaluasi Rekomendasi - SIREDO-TUS{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <h2 class="mb-4 text-center">Evaluasi Sistem Rekomendasi Berdasarkan Ground Truth</h2>
+    <table class="table table-bordered table-striped">
+        <thead class="table-danger">
+            <tr>
+                <th>Keyword</th>
+                <th>Expected Dosen</th>
+                <th>Predicted Dosen</th>
+                <th>Precision</th>
+                <th>Recall</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in hasil %}
+            <tr>
+                <td>{{ item.keyword }}</td>
+                <td>{{ item.expected_dosen | join(', ') }}</td>
+                <td>{{ item.predicted_dosen | join(', ') }}</td>
+                <td>{{ item.precision }}</td>
+                <td>{{ item.recall }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+
+{% block title %}Lecturers - SIREDO-TUS{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="/static/css/lecturer.css">
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Header Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2 class="text-center mb-3">Lecturer Profiles</h2>
+            <p class="text-center text-muted">Browse and filter lecturers by department</p>
+        </div>
+    </div>
+
+    <!-- Search Section -->
+    <div class="row mb-4">
+        <div class="col-md-8 mx-auto">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-md-3">
+                            <label for="searchInput" class="form-label">Search:</label>
+                        </div>
+                        <div class="col-md-9">
+                            <input type="text" class="form-control" id="searchInput" placeholder="Search by name or code...">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filter Section -->
+    <div class="row mb-4">
+        <div class="col-md-6 mx-auto">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-md-4">
+                            <label for="departmentFilter" class="form-label">Department:</label>
+                        </div>
+                        <div class="col-md-8">
+                            <select class="form-select" id="departmentFilter">
+                                <option value="">All Departments</option>
+                                {% for dept in departments %}
+                                <option value="{{ dept }}">{{ dept }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lecturers Grid -->
+    <div class="row" id="lecturersGrid">
+        {% for lecturer in lecturers %}
+        <div class="col-lg-4 col-md-6 col-sm-12 mb-4 lecturer-card" 
+             data-department="{{ lecturer.name_dept or 'Unknown' }}"
+             data-name="{{ lecturer.name|lower }}"
+             data-code="{{ lecturer.code_lec|lower if lecturer.code_lec else '' }}">
+            <div class="card mb-2 h-100 shadow-sm lecturer-card-inner">
+                <div class="card-body d-flex align-items-stretch">
+                    <div class="left-col text-center me-3 d-flex flex-column align-items-center">
+                        <img src="/static/assets/img/person.png" alt="Lecturer" class="rounded-circle lecturer-avatar">
+                        <a href="{{ url_for('view_profile', identifier=lecturer.code_lec) }}" class="btn btn-outline-primary mt-3" style="width: 95px">View Profile</a>
+                    </div>
+                    <div class="right-col d-flex flex-column">
+                        <h5 class="card-title lecturer-name mb-2">{{ lecturer.name }}</h5>
+                        <hr>
+                        <p class="card-text lecturer-dept mb-3"><strong>Department</strong><br>{{ lecturer.name_dept or 'Unknown Department' }}</p>
+                        <hr>
+                        <div class="lecturer-info">
+                            <p class="card-text mb-1 small expertise-list"><strong>Expertise:</strong><br>{{ lecturer.expertise or 'No expertise information available' }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('searchInput');
+    const departmentFilter = document.getElementById('departmentFilter');
+    const lecturerCards = document.querySelectorAll('.lecturer-card');
+
+    function filterLecturers() {
+        const searchTerm = searchInput.value.toLowerCase();
+        const selectedDepartment = departmentFilter.value;
+
+        lecturerCards.forEach(card => {
+            const name = card.getAttribute('data-name');
+            const code = card.getAttribute('data-code');
+            const department = card.getAttribute('data-department');
+
+            const matchesSearch = name.includes(searchTerm) || code.includes(searchTerm);
+            const matchesDepartment = !selectedDepartment || department === selectedDepartment;
+
+            if (matchesSearch && matchesDepartment) {
+                card.style.display = 'block';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    }
+
+    searchInput.addEventListener('input', filterLecturers);
+    departmentFilter.addEventListener('change', filterLecturers);
+});
+</script>
+{% endblock %} 
